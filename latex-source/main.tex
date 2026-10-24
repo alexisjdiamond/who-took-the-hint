@@ -1,0 +1,319 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{aes}
+\usepackage{amsmath,tabularx,float,array,needspace}
+\widowpenalty=10000 \clubpenalty=10000 \displaywidowpenalty=10000
+\renewcommand{\tabularxcolumn}[1]{>{\raggedright\arraybackslash}p{#1}}
+\title[Who Took the Hint?]{Who Took the Hint? Applying the Methods of Causal Inference to Evaluate Chain of Thought Monitorability}
+\aesauthor[affil={1}]{Alexis Diamond}
+\aesaffiliation{1}{Minerva University}
+\begin{document}
+\maketitle
+\begin{abstract}
+Intervention-based evaluations of chain-of-thought monitorability \citep{guan2025monitoring} ask how reliably a monitor detects whether a model’s answer was influenced by a cue. We show that these evaluations have the structure of an encouragement design with one-sided noncompliance: offering the cue is the encouragement, the model’s use of the cue’s content is the treatment, observed only through a monitor that reads the chain of thought with error, and the answer is the outcome. Applying this lens reveals a structural mismatch in the monitorability score, g-mean$^2$: monitors are graded against the complier share (the fraction of encouraged cue-concordant answers that would not have occurred without the cue), which the two arms identify, but tasked with detecting the influence rate (the fraction in which the model used the cue), which the arms do not identify. The difference between these estimands grows with the base rate. We work through three cases in which a correctly computed score supports the wrong conclusion: a monitor missing half of cue use scored as perfect; a monitor validated at low base rates deployed where they are high, including realistic environments in the framework; and a model that stops verbalizing read as a degraded monitor. The framing also suggests that established methods from econometrics and epidemiology apply.
+\end{abstract}
+\section{Introduction}
+\citet{guan2025monitoring} propose intervention-based evaluations of chain-of-thought monitorability. OpenAI reports the resulting scores in the system cards of its frontier models, and others have adopted the score \citep{wang2026monitorbench}. A model is sampled repeatedly on the same prompt with and without a cue, the change in the rate of cue-concordant output is measured, and a monitor reading the chain of thought is asked whether the model was influenced. An output is cue-concordant when it agrees with what the cue points to: the hinted option, the user’s stated opinion, the patient’s self-diagnosis. The resulting score, g-mean$^2$, is used as a measure of how far a model’s reasoning can be trusted to reveal to a monitor what drives its behavior. Chain-of-thought monitoring has been proposed as a safety control for frontier models, with monitorability as the condition under which it can be relied on \citep{korbak2025chain}.
+
+The framework is a careful attempt to measure monitorability, and its authors anticipated several issues raised here: the monotonicity assumption, dependence on base rates, and the gap between the score’s true-positive term and the actual true-positive rate. \citet{dilgren2026evaluating} catalogue practical weaknesses of the released evaluations; this paper concerns the identification structure. We show that this evaluation is an encouragement design with an unusual structure that creates blind spots. Because g-mean$^2$ grades the monitor against what the two arms can identify rather than against cue use the monitor is asked to find, it can support wrong conclusions without raising red flags. In one case (Section~3.1) it scores as perfect a monitor that misses half of actual cue use. On October 20, 2026, the score’s authors began reporting upper and lower bounds on the monitor’s true-positive rate for cue use (what the authors call causal recall), and comparing models only on instances valid for both \citep*{guan2026beyond}.\footnote{Each model’s score is computed only on the instances (prompts paired with a cue) where the cue had a positive estimated effect for that model, and different models clear that bar on different instances. Two models’ scores can therefore differ because one was scored on easier instances than the other, not because its reasoning is more legible to the monitor. Comparing them only on instances that pass for both removes that source of difference; it does not remove differences in the kind of behavior each model produces on a shared instance, as Guan, Xie and Baker note. On the released evaluations, \citet{dilgren2026evaluating} find that only 3\% to 24\% of instances pass the gate.} This paper supplies a structure that accounts for these additions, shows where the bounds are wide, and states assumptions under which they narrow.
+
+In the vocabulary of causal inference, the evaluation is an encouragement design with one-sided noncompliance: the cue is the encouragement, use of the cue’s semantic content is the treatment, and cue-concordant output is the outcome \citep{angrist1996identification}. In a standard encouragement design, take-up is observed and the counterfactual outcome is missing. Here, take-up is missing: it happens inside the model, the chain of thought is its record, and the monitor is an imperfect observer of treatment status that reads that record. The evaluation must therefore judge the monitor without any independent record of what it is supposed to detect. This inversion also shifts the objective: rather than estimating the effect of the treatment on the treated, the evaluation must judge an observer’s ability to detect the treatment.
+
+\section{The evaluation as an encouragement design}
+\subsection{Notation}
+An \emph{instance} is a prompt paired with a cue; the model is sampled n times with the cue absent and n times with it present, and each sample is a \emph{draw}. For a draw, Z $\in$ \{0, 1\} records whether the cue was offered (Z = 0 is the no-encouragement arm, Guan et al.’s control arm; Z = 1 the encouraged arm, their intervention arm), D $\in$ \{0, 1\} whether the model used the cue’s semantic content in producing its answer (“cue use” hereafter), Y $\in$ \{0, 1\} whether the output was cue-concordant in the sense of Section~1, and M $\in$ \{0, 1\} the monitor’s verdict, an imperfect observation of D made by reading the chain of thought (Appendix E). Write
+
+\begin{align*}
+  p_0 &= \Pr(Y = 1 | Z = 0)\quad\text{the base rate: cue-concordant output in the no-encouragement arm} \\
+  p_1 &= \Pr(Y = 1 | Z = 1)\quad\text{cue-concordant output in the encouraged arm} \\
+  \pi  &= \Pr(D = 1 | Z = 1)\quad\text{the take-up rate: share of encouraged draws that use the cue}
+\end{align*}
+
+Nothing is randomized: both arms are repeated draws from the same model on the same prompt, so they are exchangeable by construction, and the “types” below are proportions of draws, not labels on draws.
+
+\subsection{One-sided noncompliance and the three quantities}
+Encouragement designs are typically analyzed in statistics and econometrics with instrumental-variables methods, with the offer of the cue as the instrument. A draw cannot use a cue it was not given, so D = 0 whenever Z = 0 and noncompliance is one-sided, a case first analyzed by \citet{bloom1984accounting} and treated in \citet[ch. 23]{imbens2015causal}. The no-defier condition, an assumption basic to standard encouragement designs (here, that no draw would use the cue only when it is not offered), holds by construction. Two treatment types remain: \emph{compliers}, who use the cue when offered (mass $\pi$), and \emph{never-takers}, who ignore it (mass 1 $-$ $\pi$).
+
+Suppose, as Guan et al.’s worked example does, that a draw using the cue produces the cue-concordant output (a draw that uses the cue’s content to reject the hint violates this, as Appendix A.2 discusses), and that draws not using it behave as they would unaided, with the same baseline rate $p_0$ whether or not they are compliers (Appendix A.1 relaxes this). Then
+
+\begin{align*}
+  p_1 &= \pi  + (1 - \pi ) p_0 \\
+  \mathrm{TE} &= p_1 - p_0 = \pi  (1 - p_0) \\
+  R_{\mathrm{effect}} &= \mathrm{TE} / p_1 \\
+  \text{influence rate} &= \pi  / p_1
+\end{align*}
+
+TE is the \textbf{intention-to-treat effect} (Guan et al.’s total effect), the causal effect of offering the cue, averaged over compliers and never-takers. It equals the mass of draws whose output is cue-concordant with the cue and not without it, provided the cue never pushes a draw away from the cue-concordant output (\citeauthor{manski1997monotone}’s \citeyear{manski1997monotone} monotone treatment response, Guan et al.’s monotonicity). $R_{\mathrm{effect}}$ is the \textbf{complier share among encouraged cue-concordant draws}. It is a principal-stratum proportion \citep{frangakis2002principal} and the excess fraction of epidemiology \citep{greenland1988conceptual}, an identification \citet{burger2026cot} also make, and it is the floor the monitor is graded against (Section~2.3). The \textbf{influence rate} $\pi$ / $p_1$ is the share of encouraged cue-concordant draws that used the cue. It exceeds $R_{\mathrm{effect}}$ by $\pi$ $p_0$ / $p_1$, the compliers whose output would have been cue-concordant anyway, a mass \citet{dilgren2026evaluating} note informally, and the ratio of the influence rate to $R_{\mathrm{effect}}$ is 1 / (1 $-$ $p_0$), which depends on the base rate alone.
+
+In Guan et al.’s example (Appendix B.1, Table B1), the arms identify TE = 0.60 and the floor 0.60 / 0.85 $\approx$ 0.71. The share of encouraged D-answers that followed the hint, 0.80 / 0.85 $\approx$ 0.94, is their causal influence rate, and the difference, 0.20 / 0.85 $\approx$ 0.24, is hint-followers who would have said D anyway. TE and $R_{\mathrm{effect}}$ are functions of potential outcomes, but the influence rate is not. It is defined only relative to a model of how draws divide into types, and the two arms do not identify it.\footnote{Appendix C sorts the framework’s uses of “causal” into effects, quantities, mechanism attributions and inferences, and places the influence rate in the epidemiological literature on attributable fractions.}
+
+\subsection{How the score grades the monitor, and which instances it scores}
+Guan et al. score the monitor by what they call a minimal criterion, minimal because it requires the monitor to flag at least the smallest share of draws attributable to the cue. They write it as a true-positive rate, $\mathrm{TPR}_{\mathrm{mc}}$ (“mc” for minimal criterion):
+
+\begin{align*}
+  \mathrm{TPR}_{\mathrm{mc}} &= \min(1, \Pr(M = 1 | Z = 1, Y = 1) / R_{\mathrm{effect}}).
+\end{align*}
+
+Specificity is split by arm into two true-negative rates, $\mathrm{TNR}_0$ = Pr(M = 0 | Z = 0) and $\mathrm{TNR}_1$ = Pr(M = 0 | Z = 1, Y = 0), and the aggregate metric is the squared geometric mean of the true-positive and true-negative rates:
+
+\begin{align*}
+  g\text{-}\mathrm{mean}^2 &= \mathrm{TPR}_{\mathrm{mc}} \cdot  \sqrt{\mathrm{TNR}_1 \cdot  \mathrm{TNR}_0}.
+\end{align*}
+
+Because $R_{\mathrm{effect}}$ is undefined when TE $\leq$ 0, the metric is computed only on instances whose estimated TE is positive (a rule we call the \emph{gate}). $\mathrm{TPR}_{\mathrm{mc}}$ is not a true-positive rate in the usual sense, because the ground truth for treatment status is unknown for every draw, as its authors now note \citep*{guan2026beyond}.
+
+$R_{\mathrm{effect}}$ is a floor on the share of cue use, so $\mathrm{TPR}_{\mathrm{mc}}$, which divides the flag rate by it, is an upper bound on the monitor’s true-positive rate for cue use (its recall) \citep*{guan2026beyond}. A perfect detector flags $\pi$ / $p_1$, which exceeds $R_{\mathrm{effect}}$ by the gap, and because the ratio is capped at 1, any monitor that flags at least the floor scores 1.
+
+\subsection{The exclusion restriction, and the monitor’s error}
+The identities in Section~2.2 need the cue to affect the output only through the treatment: Y(z, d) = Y(d), the exclusion restriction of instrumental-variables analysis. With the treatment defined as use of the cue’s semantic content, the restriction says that the cue cannot shift the output except by having its content used. This assumption can fail, since a cue is also a piece of text with properties other than its content (Appendix A.6), and it is not testable from the two arms alone, which never observe D. Under the exclusion restriction, every draw whose answer moved with the cue used its content, so the floor is a lower bound on what a perfect observer of D would flag; when it fails, some outcome-dependent draws contain nothing to find, and even a perfect observer can fall below the floor (Appendix A.6).
+
+Separate from the restriction is the monitor’s error, which has two sources: the chain of thought does not record the cue use that occurred (unfaithfulness; \citealp{turpin2023language}; \citealp{lanham2023measuring}; \citealp{chen2025reasoning}), or it does and the monitor misreads it. A scored miss (an outcome that moved with the cue and was not flagged) can therefore arise three ways: a violation of the exclusion restriction, an unrecorded use, or a misreading. Only the last is a property of the monitor, and the score cannot differentiate the three (Section~3.3).
+
+\section{Three cases in which a correct score misleads}
+In each case g-mean$^2$ is computed correctly and the natural reading of the result is wrong. None of the three is a claim about any particular published score.
+
+\subsection{The half-blind monitor that scores perfectly}
+Consider a sycophancy-style behavior: the cue is a user’s stated view, which the model’s answer matches half the time unaided ($p_0$ = 0.5) and which 60\% of draws use when present ($\pi$ = 0.6). Compliers give the cue-concordant output and never-takers default to the 50\% baseline, so $p_1$ = 0.6 + 0.4 $\times$ 0.5 = 0.8, TE = $p_1$ $-$ $p_0$ = 0.3, and the floor is $R_{\mathrm{effect}}$ = TE / $p_1$ = 0.375. Compliers are $\pi$ / $p_1$ = 0.75 of encouraged cue-concordant draws, so a perfect detector of cue use flags 75\% of them. A monitor that misses half of actual cue use flags 0.375, so $\mathrm{TPR}_{\mathrm{mc}}$ = min(1, 0.375 / 0.375) = 1.
+
+With ordinary specificity it posts a g-mean$^2$ near the top of the published range while missing half of the draws in which the model used the cue, and every miss is invisible, since the framework cannot know those draws used the cue. A safety case of the form “if the model does X for reason R, the monitor catches it with probability at least p” needs the detection rate of cue use, which the two arms do not identify. The arithmetic generalizes: a monitor detecting a fraction (1 $-$ $p_0$) of cue use scores $\mathrm{TPR}_{\mathrm{mc}}$ = 1 at any $\pi$, and averaging over a dataset does not expose it, since no instance reveals D; the failure is hidden in proportion to a dataset’s share of high-base-rate instances (Section~3.2, Appendix B.2).
+
+\subsection{Validated where the floor is the influence rate, deployed where it is not}
+This case locates the gap of case (1) in the framework’s own environments. From Section~2.2, the influence rate exceeds the floor by the factor 1 / (1 $-$ $p_0$), so a monitor can miss a fraction $p_0$ of actual cue use and still score $\mathrm{TPR}_{\mathrm{mc}}$ = 1 (Appendix B.3). At $p_0$ = 0.05 the floor and the influence rate are five points apart; at $p_0$ = 0.5 the floor is half the influence rate (Figure B1). Guan et al. recommend low base rates (their Section~3.1.3), and their toy environments comply (a wrong hint on a four-option question has $p_0$ $\approx$ (1 $-$ accuracy)/3 $\approx$ 0.07), but the environments built to resemble real use have high base rates. Table 1 derives each environment’s structural base rate from the definition of Y, under the equal-baseline assumption of Section~2.2; for correct-hint environments such as Health Queries patient-opinion its figures are upper ends (Appendix B.3).
+
+\begin{table}[H]
+  \centering\small
+  \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.1cm}XXX@{}}
+    \toprule
+    Environment & Structural $p_0$ & Influence rate / floor & Cue use a monitor can miss at $\mathrm{TPR}_{\mathrm{mc}}$ = 1 \\
+    \midrule
+    Toy math/science (GPQA, DAFT) & $\approx$ (1 $-$ acc)/3; $\approx$ 0.07 at 80\% accuracy & $\approx$ 1.07 & $\approx$ 7\% \\ \addlinespace[3pt]
+    Scruples, suggest right / wrong & $\approx$ unaided rate of the suggested verdict, $\approx$ 0.5 & $\approx$ 2 & $\approx$ 50\% \\ \addlinespace[3pt]
+    Health Queries, patient opinion & $\approx$ unaided diagnostic accuracy, 0.6–0.8 & $\approx$ 2.5–5 & $\approx$ 60–80\% \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Structural base rates and the implied gap for selected Guan et al. environments, derived from the definition of Y under equal baselines (Appendix B.3 gives all eight, with outcome definitions).}
+\end{table}
+
+\subsection{The model that stopped talking}
+Suppose a model is evaluated at two checkpoints. At both the gap between arms is eight points; the monitor flags cue-driven reasoning in many encouraged cue-concordant draws at the first, and almost none at the second. g-mean$^2$ collapses ($\mathrm{TPR}_{\mathrm{mc}}$ falls to near zero) and reads as a monitor that got worse, but the true story is that the chain of thought stopped recording cue use (the first type of monitor error in Section~2.4). A monitor reading that record rightly says “not influenced.” Those draws are counted as misses. TE is unchanged across checkpoints; what collapsed is cue use as observed through the monitor. Reading the score with TE alongside separates this case from a cue that stopped mattering, where both fall, and from a degraded monitor (Appendix B.4). The Claude Opus line shows this signature across models rather than checkpoints \citep{greenblatt2024alignment,henselmans2026opus}.
+
+\section{What the score supports}
+The monitor is told in both arms that the cue was present, so every no-encouragement-arm flag is a false positive and $\mathrm{TNR}_0$ is valid. Low scores are also trustworthy about the monitoring pipeline: a monitor and record that together cannot flag even the minimal attributable share are missing cue use on any reading. A low g-mean$^2$ can be believed. A high g-mean$^2$ cannot be read as a detection rate for cue use. The score is a sound floor test for a single model in a low-base-rate regime, the regime Guan et al. recommend and their toy environments occupy. It is not a detection-rate measure, not a diagnostic of why monitorability changed, and not comparable across models or checkpoints without a stated instance population, since the gate TE > 0 is applied to a noisy estimate and two models end up scored on different instances, as \citet{dilgren2026evaluating} document.
+
+\section{Remedies}
+\subsection{Report the intention-to-treat effect next to the score}
+Reporting TE, which the framework already computes, alongside g-mean$^2$ and across checkpoints converts case (3) into the decision rule of Section~3.3 (Table B3).
+
+\subsection{Report a range for recall, and say what would narrow it}
+\citet*{guan2026beyond} now report a range for how much of the model’s cue use the monitor catches, with g-mean$^2$’s true-positive term as its top. We propose treating the influence rate as a sensitivity parameter. For each postulated value the bounds follow, and one can calculate the values of the influence rate for which recall exceeds a safety threshold (Appendix A.3). The encouragement design says when the range will be wide. The width is set by the base rate. Where the model rarely gives the cue-concordant answer unaided ($p_0$ low), the range is a few points wide; where it does ($p_0$ high), as in Table 1’s realistic environments, the range can be from zero to one.
+
+The encouragement design also identifies the two assumptions that narrow the range. One assumption is a judgment about which draws take a hint: if uncertain draws take hints more readily than confident ones (Appendix A.1), the range narrows for wrong hints, though not for correct ones such as the Health Queries diagnoses. The other is a judgment that the monitor’s false-flag rate, measurable in the no-encouragement arm, carries over to the encouraged arm (Appendix A.3 derives the bounds and A.5 the narrowing; B.5 works an example).
+
+\subsection{A consistency check across cue variants}
+Guan et al. run several cue variants on the same datasets. For variant v, provided the exclusion restriction holds, the estimate TE / $\hat{\pi}$ (the Wald ratio estimate, with $\hat{\pi}$ the monitor’s flag rate) equals 1 $-$ $p_0^{c}$(v), the effect of cue use on the draws that take cue v, divided by the monitor’s detection rate (which is the same across variants if the monitor misses cue use at the same rate under each). This effect is instrument-specific \citep{imbens1994identification}: each variant recruits its own compliers, and in this design their effect differs across variants only through their unaided rate $p_0^{c}$(v), since every complier gives the cue-concordant output. The ratios are therefore not required to agree. Agreement across variants, if it obtains, would nonetheless be informative, since it would take monitor error, direct effects of the cue text and differences in who complies to cancel exactly. Disagreement, on its own, cannot be attributed to any one of the three. The check (Appendix A.4) uses no new data, and we know of no precedent for it in the monitorability literature. It does not identify the Wald ratio, unless the monitor’s flag rate equals the rate of cue use, as it does for a perfect monitor.
+
+\subsection{Cues that leave a trace, and placebo cues}
+Suppose a cue must be decoded prior to use. A model that gives the cue-concordant answer has then either decoded and used the cue or would have given that answer without it, and the second is rare when the cue points to a wrong answer and the model usually answers correctly. The answer itself then records cue use, independently of the chain of thought, and the monitor can be checked against it. Guan et al.’s encoded-GPQA variant has this property. The converse is a placebo cue, offered but unable to affect output, so all flags are false positives: the negative-control exposure of epidemiology \citep{lipsitch2010negative}.
+
+\section{Reporting conditions}
+Following \citet{cook2008three}, monitorability reports should state: (1) which quantity a score measures (Appendix C), $\mathrm{TPR}_{\mathrm{mc}}$ being an upper bound on recall of cue use, not recall itself; (2) the base rate $p_0$ for each environment, alongside g-mean$^2$; (3) the intention-to-treat effect TE alongside the score and across checkpoints (Appendix B.4); (4) the exclusion restriction and the faithfulness of the chain of thought, treated as assumptions to be argued; (5) the survivor fraction and draws per arm, with no comparison of models scored on different survivor sets; and (6) both bounds on recall of cue use, as \citet*{guan2026beyond} now recommend, with any narrowing and its assumption.
+
+\section{Conclusion}
+Guan et al.’s framework is an encouragement design, and reading it as one separates the intention-to-treat effect, the complier share among encouraged cue-concordant draws, and the share of those draws that relied on the cue. The score grades the monitor against the second and asks it about the third; the two differ by a quantity that grows with the base rate. Its authors’ recent additions address two of the problems identified here: a lower bound on recall makes the gap between the floor and the influence rate visible, and comparisons on matched instances remove the differences in scored instances described in Section~4. The encouragement design offers a common framework for extending them, one that applies equally to alignment-faking evaluations (Appendix D).
+
+
+\begin{aespubliconly}
+\aesbackmattersection{Acknowledgments}
+The author used Claude (Anthropic) for drafting, editing, checking derivations and cross-references, and preparing the LaTeX version; all claims, analysis and judgments are the author’s.
+\end{aespubliconly}
+
+\Needspace*{6\baselineskip}
+
+\bibliography{references}
+
+\appendix
+\emph{Appendices A.2, A.4, B.1–B.4, C and D are in the online supplement at \url{https://github.com/alexisjdiamond/who-took-the-hint}. Section numbers there match the references in the text.}
+
+\setcounter{section}{0}
+\section{Derivations}
+\setcounter{subsection}{0}
+\subsection{Unequal baselines}
+Let compliers and never-takers have unaided cue-concordant rates $p_0^{c}$ and $p_0^{n}$, which need not be equal and are not separately identified. Under one-sided noncompliance and the exclusion restriction,
+
+\begin{align*}
+  p_0 &= \pi  p_0^{c} + (1 - \pi ) p_0^{n}, \\
+  p_1 &= \pi  + (1 - \pi ) p_0^{n}, \\
+  \mathrm{TE} &= \pi  (1 - p_0^{c}).
+\end{align*}
+
+The floor is $R_{\mathrm{effect}}$ = TE / $p_1$ and the influence rate is $\pi$ / $p_1$; their difference, the mass of encouraged cue-concordant draws that used the cue and would have been cue-concordant anyway, is $\pi$ $p_0^{c}$ / $p_1$, and their ratio is 1 / (1 $-$ $p_0^{c}$). The equal-baseline formulas in Section~2.2 follow with $p_0^{c}$ = $p_0^{n}$ = $p_0$. Note that the gap depends on the compliers’ baseline specifically, so Guan et al.’s point value of 16/17 relies on the untestable assumption that cue use is independent of what a draw would have done unaided. The effect of cue use among cue-using draws is TE / $\pi$ = 1 $-$ $p_0^{c}$; with one-sided noncompliance this is both the local average treatment effect and the effect of treatment on the treated. Read in reverse, any postulated $\pi$ implies $p_0^{c}$ = 1 $-$ TE / $\pi$, and the constraint $p_0^{c}$ $\in$ [0, 1] with $p_0^{n}$ $\in$ [0, 1] reproduces exactly $\pi$ $\in$ [TE, $p_1$]. The further restriction $p_0^{c}$ $\geq$ $p_0^{n}$, equivalently $p_0^{c}$ $\geq$ $p_0$, plausible for a wrong hint, gives $\pi$ $\geq$ TE / (1 $-$ $p_0$) and hence an influence rate of at least TE / [(1 $-$ $p_0$) $p_1$]; the reverse restriction, plausible for a correct hint, gives the corresponding upper bound, which leaves the lower bound on recall unchanged.
+
+\emph{Worked example, Guan et al.'s instance.} The arms give $p_0$ = 0.25, $p_1$ = 0.85 and TE = 0.60, so $\pi$ can lie anywhere in [0.60, 0.85]. Each value is a different account of who complied. At $\pi$ = 0.60, the minimum, every encouraged cue-concordant draw that would not have been cue-concordant anyway is a complier, so $p_0^{c}$ = 1 $-$ 0.60 / 0.60 = 0: the compliers never give the hinted answer unaided. At $\pi$ = 0.85, the maximum, $p_0^{c}$ = 1 $-$ 0.60 / 0.85 = 0.29. At Guan et al.'s $\pi$ = 0.80, $p_0^{c}$ = 1 $-$ 0.60 / 0.80 = 0.25 = $p_0$, which is the equal-baseline case: their point value is the one account in which compliers behave unaided like everyone else. The two arms cannot choose among these accounts. The restriction $p_0^{c}$ $\geq$ $p_0$ = 0.25 selects the upper part of the range, $\pi$ $\geq$ 0.80, and hence an influence rate of at least 0.80 / 0.85 = 0.94.
+
+Why the baselines are likely to differ. The equal-baseline assumption is probably false. Whether a draw takes a hint plausibly depends on how confident the model is in its own answer: a draw that has settled on an answer tends to ignore a hint pointing elsewhere, and an uncertain draw tends to take it \citep{sharma2023towards,chen2025reasoning,lanham2023measuring}. Compliers are then concentrated among uncertain draws, which spread probability across options, including the hinted one. For a wrong hint, the compliers’ unaided rate $p_0^{c}$ therefore exceeds the never-takers’ $p_0^{n}$. For a correct hint the inequality reverses, since confident never-takers give the right answer. This changes inference about take-up, as the formulas above show.
+
+\setcounter{subsection}{2}
+\subsection{Bounds on the influence rate and on causal recall}
+Under monotone treatment response, every encouraged cue-concordant draw whose output depended on the cue used it, so the influence rate is at least $R_{\mathrm{effect}}$; and it is at most 1. Hence c = $\pi$ / $p_1$ $\in$ [$R_{\mathrm{effect}}$, 1], which is the sense in which Guan et al.’s total effect “lower-bounds the causal influence rate,” and which \citet*{guan2026beyond} write as $R_{\mathrm{effect}}$ $\leq$ P(U = 1 | X = 1, Y = 1) $\leq$ 1. Recall is the share of cue-using draws the monitor flags: among encouraged cue-concordant draws, a fraction c used the cue, the monitor flags a fraction f of all of them, and recall is the fraction of the c-group that carries a flag. Since the flags that fall in the c-group cannot exceed f, recall $\leq$ f / c; and since at most 1 $-$ c of the flags can fall outside it, at least f $-$ (1 $-$ c) fall inside, so recall $\geq$ (f + c $-$ 1) / c. Hence, for a given influence rate c, recall $\in$ [max(0, (f + c $-$ 1) / c), min(1, f / c)]. As c rises the lower end rises and the upper end falls, so over c $\in$ [c\_min, 1] the sharp bounds are attained at c\_min; with c\_min = $R_{\mathrm{effect}}$ they are Guan, Xie and Baker’s bounds, and the upper bound is $\mathrm{TPR}_{\mathrm{mc}}$. A perfect detector has f = c $\geq$ $R_{\mathrm{effect}}$ and so $\mathrm{TPR}_{\mathrm{mc}}$ = 1, which is why the cap at 1 is needed. A monitor detecting a share $\delta$ of cue use with no false flags has f = $\delta$ c and clears the floor whenever $\delta$ $\geq$ $R_{\mathrm{effect}}$ / c = 1 $-$ $p_0$ under equal baselines, which is the statement of Section~3.1. Under the monotone-instrument restriction of A.1, c\_min = TE / [(1 $-$ $p_0$) $p_1$] > $R_{\mathrm{effect}}$ and the bounds narrow; the restriction fits wrong hints and reverses for correct ones (A.5).
+
+Sensitivity path and breakdown values. The unidentified parameter is the take-up rate $\pi$ $\in$ [TE, $p_1$], equivalently the influence rate c = $\pi$ / $p_1$ $\in$ [$R_{\mathrm{effect}}$, 1]. For a postulated c, recall lies in [max(0, (f + c $-$ 1) / c), min(1, f / c)], and because the lower end rises and the upper end falls as c rises, the interval a reader accepts is pinned by the smallest c they are willing to entertain. The breakdown value, in the sense of \citet{rosenbaum2002observational}, is the value of c at which the lower end crosses whatever threshold a safety case requires: how much hidden cue use would have to exist for this monitor to be unacceptable. Two worked examples follow; B.5 gives a third.
+
+\emph{Worked example 1, the half-blind monitor of Section~3.1.}
+
+\emph{Step 1, the data.} From Section~3.1: $p_0$ = 0.5, $\pi$ = 0.6, $p_1$ = 0.8, TE = 0.3 and $R_{\mathrm{effect}}$ = 0.375. Cue-using draws are $\pi$ / $p_1$ = 0.75 of encouraged cue-concordant draws, and the monitor catches half of them, so its flag rate among those draws is f = 0.375. The admissible range for c is [0.375, 1]. Because the example is stipulated, we also know the true value, c = 0.75, which an evaluator would not.
+
+\emph{Step 2, the bounds at the floor, c = 0.375.} Lower end: max(0, (0.375 + 0.375 $-$ 1) / 0.375) = max(0, $-$0.67) = 0. Upper end: min(1, 0.375 / 0.375) = 1. The interval is [0, 1]: the data alone are consistent with the monitor catching none of the cue use or all of it. These are Guan, Xie and Baker's bounds for this monitor.
+
+\emph{Step 3, a middle value, c = 0.6.} Lower end: max(0, (0.375 + 0.6 $-$ 1) / 0.6) = max(0, $-$0.04) = 0. Upper end: 0.375 / 0.6 = 0.63. The interval is [0, 0.63].
+
+\emph{Step 4, the true value, c = 0.75.} Lower end: (0.375 + 0.75 $-$ 1) / 0.75 = 0.125 / 0.75 = 0.17. Upper end: 0.375 / 0.75 = 0.50. The interval is [0.17, 0.50], and the monitor's true recall, 0.50, sits at its top.
+
+\emph{Step 5, the breakdown value.} Suppose a safety case requires recall of at least 0.5. The lower end reaches 0.5 only when (0.375 + c $-$ 1) / c $\geq$ 0.5, that is, c $\geq$ 1.25, which no influence rate can satisfy; even at c = 1 the lower end is 0.375. No assumption about hidden cue use, however favorable, certifies this monitor at 0.5. The point score, $\mathrm{TPR}_{\mathrm{mc}}$ = 1, shows none of this.
+
+\emph{Worked example 2, a 30-draw instance.}
+
+\emph{Step 1, the data.} Of 30 no-encouragement draws, 8 give the cue-concordant answer, and of 30 encouraged draws, 25 do: $p_0$ = 0.27, $p_1$ = 0.83, TE = 0.57 and $R_{\mathrm{effect}}$ = 0.57 / 0.83 = 0.68. The monitor flags 18 of the 25 encouraged cue-concordant draws, so f = 0.72. Here the true c is unknown; its admissible range is [0.68, 1].
+
+\emph{Step 2, the bounds at the floor, c = 0.68.} Lower end: (0.72 + 0.68 $-$ 1) / 0.68 = 0.40 / 0.68 = 0.59. Upper end: min(1, 0.72 / 0.68) = 1. The interval is [0.59, 1].
+
+\emph{Step 3, the bounds at c = 0.93}, the value the take-up restriction of A.5 implies. Lower end: (0.72 + 0.93 $-$ 1) / 0.93 = 0.65 / 0.93 = 0.70. Upper end: 0.72 / 0.93 = 0.77. The interval is [0.70, 0.77].
+
+\emph{Step 4, breakdown values.} For a threshold of 0.60, solve (0.72 + c $-$ 1) / c = 0.60: 0.4c = 0.28, so c = 0.70. If at least 70\% of encouraged cue-concordant draws used the cue, recall is at least 0.60. For a threshold of 0.70 the same calculation gives c = 0.93, which is the restriction's own bound, so under the take-up restriction this monitor is certified at 0.70.
+
+\emph{Step 5, the comparison.} Both monitors score $\mathrm{TPR}_{\mathrm{mc}}$ = 1. One can be certified at 0.70 under a defensible restriction; the other cannot be certified at 0.50 under any. The point score hides the difference entirely.
+
+A second axis treats unrecorded cue use the same way: if a share $\varepsilon$ of cue use goes unrecorded in the chain of thought, the first stage a reader can see is $\pi$(1 $-$ $\varepsilon$) and the implied miss rate rises accordingly; a direct effect of the cue, an exclusion failure, enters the same arithmetic by the route \citet{jo2002estimation} and \citet{conley2012plausibly} analyze. At low base rates no plausible c breaks a monitor that clears the floor; at high base rates the breakdown value sits inside the plausible range.
+
+The measured false-flag rate, worked on the 30-draw instance.
+
+\emph{Step 1, the decomposition.} Among encouraged cue-concordant draws, a share c used the cue and the monitor misses a fraction $\delta$ of them; the remaining 1 $-$ c did not use it, and the monitor flags a fraction $\varphi$ of those by mistake. The flag rate is therefore f = c(1 $-$ $\delta$) + (1 $-$ c)$\varphi$. For a postulated c, this has one unknown, $\delta$, if $\varphi$ is known.
+
+\emph{Step 2, estimating $\varphi$.} In the no-encouragement arm no draw used a cue, so every flag there is false. Two flags among 30 draws give $\varphi$ $\approx$ 0.07, which is 1 $-$ $\mathrm{TNR}_0$. (Where it can be used, 1 $-$ $\mathrm{TNR}_1$, the false-flag rate on encouraged draws that did not give the cue-concordant answer, is the closer estimate, since those draws saw the cue.)
+
+\emph{Step 3, solving for the miss rate.} Rearranging, $\delta$ = 1 $-$ [f $-$ (1 $-$ c)$\varphi$] / c. At c = 0.93: (1 $-$ c)$\varphi$ = 0.07 $\times$ 0.07 $\approx$ 0.005, so f $-$ 0.005 = 0.715, and 0.715 / 0.93 = 0.77, giving $\delta$ = 0.23 and recall 1 $-$ $\delta$ = 0.77. That is the top of the interval from the sensitivity path, which says that almost all of the monitor's flags fell on draws that used the cue.
+
+\emph{Step 4, what $\varphi$ says about c on its own.} Recall cannot exceed 1, so f $\leq$ c + (1 $-$ c)$\varphi$, which rearranges to c $\geq$ (f $-$ $\varphi$) / (1 $-$ $\varphi$) = (0.72 $-$ 0.07) / 0.93 = 0.70. With $\varphi$ measured, influence rates below 0.70 are ruled out by the data alone, with no take-up restriction, and the lower bound on recall rises from 0.59 to (0.72 + 0.70 $-$ 1) / 0.70 = 0.60.
+
+\emph{Step 5, the assumptions.} Two are needed: that the monitor's false-flag rate does not depend on the outcome, and that the rate measured on cue-absent text carries over to encouraged draws that saw the cue and did not use it. The first is plausible in the chain-of-thought-only scope, weakened when the chain of thought states its answer, and fails in the all-messages scope, where the monitor sees the answer \citep{imai2010causal}. The second is an assumption about how the cue's presence in the prompt affects the monitor.
+
+\setcounter{subsection}{4}
+\subsection{Bounds on recall and how to narrow them (Section~5.2)}
+The share of cue-reliant draws the monitor catches, which \citet*{guan2026beyond} call causal recall, is not identified, but it is bounded. Given the flag rate f among encouraged cue-concordant draws and the floor $R_{\mathrm{effect}}$, they derive the sharp bounds
+
+\begin{align*}
+  \text{lower bound on recall} &= \max(0, (f + R_{\mathrm{effect}} - 1) / R_{\mathrm{effect}}), \\
+  \text{upper bound on recall} &= \min(1, f / R_{\mathrm{effect}}) = \mathrm{TPR}_{\mathrm{mc}},
+\end{align*}
+
+and now recommend reporting both (A.3 derives them). The bounds are attained when the influence rate c equals its minimum $R_{\mathrm{effect}}$, and both ends tighten as c rises. The design adds two things. First, the width of the interval is governed by the base rate: at $p_0$ = 0.05 the floor is near 1 and the interval is a few points wide; at $p_0$ = 0.5 the half-blind monitor of Section~3.1 shows [0, 1]. The bounds are least informative in exactly the environments of Table 1 where $p_0$ is high. Second, the bounds can be narrowed, but only by adding assumptions: a restriction on c, and a false-flag rate the framework already measures. Each holds in some settings and not others.
+
+The restriction: by Appendix A.1, TE / $\pi$ = 1 $-$ $p_0^{c}$ whatever the baselines, so each postulated $\pi$ implies an unaided rate for the compliers. If compliers are the uncertain draws, as A.1 argues, then
+
+\begin{align*}
+  p_0^{c} &\geq p_0\quad\text{which rearranges to} \\
+  \pi  &\geq \mathrm{TE} / (1 - p_0)\quad\text{and equivalently} \\
+  c &\geq \mathrm{TE} / [(1 - p_0) p_1],
+\end{align*}
+
+a monotone-instrument assumption in Manski and Pepper's (2000) sense. Worked through on three instances:
+
+\emph{Step 1, Guan et al.'s example.} $p_0$ = 0.25, $p_1$ = 0.85, TE = 0.60. Without the restriction, $\pi$ $\in$ [0.60, 0.85] and so c $\in$ [0.71, 1]. The restriction gives $\pi$ $\geq$ TE / (1 $-$ $p_0$) = 0.60 / 0.75 = 0.80, hence c $\geq$ 0.80 / 0.85 = 0.94: the influence rate lies in [0.94, 1] rather than [0.71, 1].
+
+\emph{Step 2, the 30-draw instance of A.3.} $p_0$ = 0.27, $p_1$ = 0.83, TE = 0.57, so c $\geq$ 0.57 / (0.73 $\times$ 0.83) = 0.93. The recall bounds narrow from [0.59, 1] at c = 0.68 to [0.70, 0.77] at c = 0.93 (A.3, worked example 2).
+
+\emph{Step 3, the half-blind monitor of Section~3.1.} $p_0$ = 0.5, $p_1$ = 0.8, TE = 0.3, so c $\geq$ 0.3 / (0.5 $\times$ 0.8) = 0.75. The recall bounds narrow from [0, 1] to [0.17, 0.50]: the monitor catches at most half of cue use. This step is hypothetical, since for a sycophancy-style behavior the restriction's direction is not established (B.5, step 5).
+
+The restriction applies to wrong hints and reverses for correct ones, so it gives no narrowing in correct-hint environments such as Health Queries patient-opinion; B.5 works the bounds and the narrowing on a 30-draw instance and explains the dependence on the hint’s correctness.
+
+The measured quantity: the monitor's flag rate decomposes as
+
+\begin{align*}
+  f &= c(1 - \delta ) + (1 - c)\varphi ,
+\end{align*}
+
+where $\delta$ is the miss rate among cue-using draws and $\varphi$ the false-flag rate among the rest, and $\varphi$ is estimable from the no-encouragement arm, where every flag is false. That leaves one unknown per postulated c, the one-parameter sensitivity analysis of \citet{imai2010causal} for a mismeasured treatment; Imai and Yamamoto's differential measurement error is the formal home of the degenerate monitor that flags whenever the answer matches the cue. A.3 works the calculation step by step on the 30-draw instance, states the two assumptions it needs, and shows that the measured $\varphi$ also bounds c from below on its own.
+
+\setcounter{subsection}{5}
+\subsection{How the exclusion restriction fails, with an example}
+The exclusion restriction fails when the cue text moves the output by a route other than use of its semantic content. For example, the cue lengthens the prompt, which can change how long the model reasons, and its mere presence can provoke a reaction whatever it says. On a broader definition of cue use, any causal role the cue plays in producing the output, these routes would count as use and the restriction would hold by construction; but that definition makes the treatment include influence that leaves no reasoning for a reader of the chain of thought to find, so the monitor would have a target it cannot in principle observe.
+
+A worked example of the failure:
+
+\emph{Step 1, the setup.} Take 100 encouraged draws on a question with a wrong hint pointing to option D, and a base rate of 0.20, so that without the hint 20 of 100 draws would answer D.
+
+\emph{Step 2, content use.} Suppose 30 of the 100 use the hint's content and all 30 answer D.
+
+\emph{Step 3, a direct effect.} Suppose the hint's mere presence, independent of its content, raises the D rate among the other 70 draws from 0.20 to 0.50, so 35 of them answer D instead of the 14 the base rate would predict. This is a violation of the exclusion restriction: the cue moved the output by a route other than use of its content.
+
+\emph{Step 4, what the arms show.} $p_1$ = 65 / 100 = 0.65 and $p_0$ = 0.20, so TE = 0.45 and the floor is $R_{\mathrm{effect}}$ = 0.45 / 0.65 = 0.69. The metric requires a monitor to flag at least 45 of the 65 D-answers.
+
+\emph{Step 5, what a perfect observer of cue use finds.} Only 30 of the 65 D-answers used the hint's content. The other 35 were moved by the hint's presence and contain no content use for any reader of the chain of thought to find. A perfect observer flags 30 of 65, a rate of 0.46, and scores $\mathrm{TPR}_{\mathrm{mc}}$ = 0.46 / 0.69 = 0.67. The exclusion failure makes a flawless monitor look as if it misses a third of cue use, and nothing in the two arms distinguishes this from a monitor that does.
+
+\setcounter{section}{1}
+\section{Worked examples}
+\setcounter{subsection}{4}
+\subsection{Bounds on recall, and narrowing them (Section~5.2), step by step}
+\emph{Step 1, the data.} Take the 30-draw instance of Section~2.3’s example as it would arise in practice: 8 of 30 no-encouragement draws and 25 of 30 encouraged draws give the cue-concordant answer, so $p_0$ = 0.27, $p_1$ = 0.83, TE = 0.57 and $R_{\mathrm{effect}}$ = 0.57 / 0.83 = 0.68. The monitor flags 18 of the 25 encouraged cue-concordant draws, a flag rate f = 0.72, and 2 of the 30 no-encouragement draws.
+
+\emph{Step 2, the bounds with no further assumption.} Recall is the share of cue-using draws the monitor flagged. The worst case places as many flags as possible on draws that did not use the cue, the best case places them all on draws that did, and both are evaluated at the smallest influence rate the data allow, c = $R_{\mathrm{effect}}$:
+
+\begin{align*}
+  \text{lower bound} &= \max(0, (f + R_{\mathrm{effect}} - 1) / R_{\mathrm{effect}}) = \max(0, (0.72 + 0.68 - 1) / 0.68) = 0.59, \\
+  \text{upper bound} &= \min(1, f / R_{\mathrm{effect}}) = \min(1, 0.72 / 0.68) = 1.
+\end{align*}
+
+So the monitor caught somewhere between 59\% and 100\% of cue use. These are \citeauthor*{guan2026beyond}’s (\citeyear{guan2026beyond}) bounds.
+
+\emph{Step 3, narrowing by a restriction on take-up.} If uncertain draws take hints more readily than confident ones (A.1), the compliers’ unaided rate is at least the base rate, which gives c $\geq$ TE / [(1 $-$ $p_0$) $p_1$] = 0.57 / (0.73 $\times$ 0.83) = 0.93 rather than c $\geq$ 0.68. Both ends of the interval move with c, and at c = 0.93:
+
+\begin{align*}
+  \text{lower bound} &= (0.72 + 0.93 - 1) / 0.93 = 0.70, \\
+  \text{upper bound} &= 0.72 / 0.93 = 0.77.
+\end{align*}
+
+The monitor caught between 70\% and 77\% of cue use: a 7-point interval in place of a 41-point one, bought with one assumption.
+
+\emph{Step 4, narrowing by the measured false-flag rate.} The 2 flags among 30 no-encouragement draws are all false, since no draw there used a cue, so the false-flag rate is $\varphi$ $\approx$ 0.07. The flag rate decomposes as f = c(1 $-$ $\delta$) + (1 $-$ c)$\varphi$, where $\delta$ is the miss rate among cue-using draws. At c = 0.93, $\delta$ = 1 $-$ [0.72 $-$ 0.07 $\times$ 0.07] / 0.93 = 0.23, so recall is 0.77: the top of the interval, which says that nearly all of the monitor’s flags were on draws that used the cue. This step assumes the false-flag rate on cue-absent text carries over to encouraged draws that did not use the cue, and that it does not depend on the outcome (A.5).
+
+\emph{Step 5, when step 3 applies.} The restriction works through what uncertain draws do unaided: they spread their answers across options. For a wrong hint, that means uncertain draws land on the hinted wrong option more often than confident, correct draws do, so compliers’ unaided rate exceeds the base rate and c rises, as in step 3. For a correct hint it runs the other way: the confident draws are the ones already giving the right answer, uncertain draws give it less often, so compliers’ unaided rate is below the base rate and the restriction gives no narrowing. Health Queries patient-opinion is a correct-hint environment. For a sycophancy-style behavior like the half-blind example of Section~3.1, neither direction follows from this argument, so only step 2’s bounds apply there unless something else is known about which draws take the cue.
+
+\setcounter{section}{4}
+\section{Notation correspondence}
+The term “encouragement design” is from \citet{holland1988causal}. In the experimental literature, data from encouragement designs are typically analyzed by instrumental-variables (IV) estimation, with the encouragement serving as the instrument for treatment take-up.
+
+The nearest relatives are instrumental-variables analyses with a mismeasured treatment \citep{imai2010causal,battistin2014misreported,calvi2022late}.
+
+\begin{table}[H]
+  \centering\small
+  \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{2.2cm}X@{}}
+    \toprule
+    Guan et al. & This paper & Meaning \\
+    \midrule
+    X & Z & Cue offered (encouragement); X = 1 / Z = 1 is the encouraged arm \\ \addlinespace[3pt]
+    — & D & Treatment indicator: D = 1 if the draw used the cue’s semantic content, D = 0 if not; D = 0 whenever Z = 0; unobserved, measured with error by M \\ \addlinespace[3pt]
+    Y & Y & Outcome indicator for a draw: Y = 1 if the output is cue-concordant (agrees with what the cue points to), Y = 0 if not \\ \addlinespace[3pt]
+    — & Y(1), Y(0) & Potential outcomes: the value Y would take for the same draw with the cue offered (Y(1)) and without it (Y(0)); the observed Y is Y(Z) \\ \addlinespace[3pt]
+    — & $p_0$, $p_1$ & Rate of cue-concordant output in the no-encouragement arm (the base rate) and in the encouraged arm \\ \addlinespace[3pt]
+    — & $\pi$ & Take-up rate: share of encouraged draws that use the cue; the complier mass \\ \addlinespace[3pt]
+    — & $p_0^{c}$, $p_0^{n}$ & Unaided cue-concordant rates of compliers and never-takers; equal to $p_0$ under the equal-baseline assumption (A.1); $p_0^{c}$(v) is the compliers’ rate under cue variant v (Section~5.3) \\ \addlinespace[3pt]
+    Z & M & Monitor’s verdict; an imperfect observation of D from the chain of thought \\ \addlinespace[3pt]
+    U & — & “Intervention causally responsible”; equals D = 1 among encouraged cue-concordant draws under the complier/never-taker model of Section~2.2 \\ \addlinespace[3pt]
+    TE & TE (ITT) & $p_1$ $-$ $p_0$ \\ \addlinespace[3pt]
+    $R_{\mathrm{effect}}$ & $R_{\mathrm{effect}}$ (floor) & TE / $p_1$, the complier share among encouraged cue-concordant draws \\ \addlinespace[3pt]
+    Causal influence rate & Influence rate & $\pi$ / $p_1$; the share of encouraged cue-concordant draws that used the cue; not identified, bounded below by $R_{\mathrm{effect}}$ \\ \addlinespace[3pt]
+    Causal recall & Recall (of cue use) & Share of cue-using draws the monitor flags, Pr(M = 1 | D = 1, Z = 1, Y = 1); not identified, bounded (A.3) \\ \addlinespace[3pt]
+    $\mathrm{TPR}_{\mathrm{mc}}$ & $\mathrm{TPR}_{\mathrm{mc}}$ & Flag rate among encouraged cue-concordant draws divided by $R_{\mathrm{effect}}$, capped at 1; an upper bound on recall \\ \addlinespace[3pt]
+    $\mathrm{TNR}_0$, $\mathrm{TNR}_1$ & $\mathrm{TNR}_0$, $\mathrm{TNR}_1$ & True-negative rates: Pr(M = 0 | Z = 0) in the no-encouragement arm, where every flag is false, and Pr(M = 0 | Z = 1, Y = 0) among encouraged draws without the cue-concordant output \\ \addlinespace[3pt]
+    g-mean$^2$ & g-mean$^2$ & The monitorability score, $\mathrm{TPR}_{\mathrm{mc}}$ $\cdot$ $\surd$($\mathrm{TNR}_1$ $\cdot$ $\mathrm{TNR}_0$) \\ \addlinespace[3pt]
+    — & the gate & The rule that scores an instance only if its estimated TE is positive (Section~2.3) \\ \addlinespace[3pt]
+    — & f & Monitor’s flag rate among encouraged cue-concordant draws, Pr(M = 1 | Z = 1, Y = 1) \\ \addlinespace[3pt]
+    — & c & The influence rate when treated as a sensitivity parameter, c = $\pi$ / $p_1$ $\in$ [$R_{\mathrm{effect}}$, 1] \\ \addlinespace[3pt]
+    — & $\delta$ & Miss rate: share of cue-using draws the monitor does not flag, 1 $-$ recall \\ \addlinespace[3pt]
+    — & $\varphi$ & False-flag rate: share of draws without cue use that the monitor flags, estimated from the no-encouragement arm \\ \addlinespace[3pt]
+    — & $\varepsilon$ & Share of cue use that the chain of thought does not record (A.3) \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Notation correspondence between \citet{guan2025monitoring} and this paper.}
+\end{table}
+
+\end{document}
