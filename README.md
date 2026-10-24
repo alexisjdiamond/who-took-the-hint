@@ -1,6 +1,6 @@
 # Who Took the Hint?
 
-*Applying the Methods of Causal Inference to Evaluate Chain of Thought Monitorability*
+*Applying Methods of Causal Inference to Evaluate Chain of Thought Monitorability*
 
 Alexis Diamond, Minerva University. Agent Evaluation Science symposium, New York, November 2026.
 
