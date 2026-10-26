@@ -7,4 +7,6 @@ Alexis Diamond, Minerva University. Agent Evaluation Science symposium, New York
 - **[Paper (PDF)](who-took-the-hint.pdf)**
 - **[Online supplement (PDF)](who-took-the-hint-online-supplement.pdf)**: Appendices A.2, A.4, B.1–B.4, C and D. Section numbers match the references in the paper; Appendices A.1, A.3, A.5, A.6, B.5 and E are printed with the paper.
 
+**Note on versions.** The PDFs here are corrected relative to the version submitted to the symposium in October 2026. Section 5.2 and Appendices A.3 and A.5 previously said that the width of the recall interval is set by the base rate; that holds only when the monitor's flag rate is below the floor. What the base rate governs is whether a lower bound above zero is available at all, which requires the flag rate to exceed the base rate. Appendix D's readings of two published results have also been corrected, and it now cites the companion paper at https://github.com/alexisjdiamond/who-would-have-complied-anyway. The conclusions are unchanged.
+
 The `latex-source/` folder (if present) contains the LaTeX source for both documents; compile `main.tex` and `supplement.tex` with XeLaTeX.
