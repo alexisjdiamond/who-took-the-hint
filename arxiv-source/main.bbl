@@ -1,0 +1,247 @@
+\begin{thebibliography}{35}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Angrist et~al.(1996)Angrist, Imbens, and
+  Rubin]{angrist1996identification}
+Joshua~D. Angrist, Guido~W. Imbens, and Donald~B. Rubin.
+\newblock Identification of causal effects using instrumental variables.
+\newblock \emph{Journal of the American Statistical Association}, 91\penalty0
+  (434):\penalty0 444--455, 1996.
+\newblock \doi{10.1080/01621459.1996.10476902}.
+
+\bibitem[Battistin et~al.(2014)Battistin, De~Nadai, and
+  Sianesi]{battistin2014misreported}
+Erich Battistin, Michele De~Nadai, and Barbara Sianesi.
+\newblock Misreported schooling, multiple measures and returns to educational
+  qualifications.
+\newblock \emph{Journal of Econometrics}, 181\penalty0 (2):\penalty0 136--150,
+  2014.
+\newblock \doi{10.1016/j.jeconom.2014.03.002}.
+
+\bibitem[Bloom(1984)]{bloom1984accounting}
+Howard~S. Bloom.
+\newblock Accounting for no-shows in experimental evaluation designs.
+\newblock \emph{Evaluation Review}, 8\penalty0 (2):\penalty0 225--246, 1984.
+\newblock \doi{10.1177/0193841X8400800205}.
+
+\bibitem[B{\"u}rger et~al.(2026)B{\"u}rger, Komorowski, Weckbecker, Kortukov,
+  Jain, Lapuschkin, and Samek]{burger2026cot}
+Lennart B{\"u}rger, Piotr Komorowski, Moritz Weckbecker, Evgenii Kortukov,
+  Aakriti Jain, Sebastian Lapuschkin, and Wojciech Samek.
+\newblock Chain of thought monitoring can fail even when {CoT} is necessary.
+\newblock arXiv:2610.18105, 2026.
+
+\bibitem[Calvi et~al.(2022)Calvi, Lewbel, and Tommasi]{calvi2022late}
+Rossella Calvi, Arthur Lewbel, and Denni Tommasi.
+\newblock {LATE} with missing or mismeasured treatment.
+\newblock \emph{Journal of Business \& Economic Statistics}, 40\penalty0
+  (4):\penalty0 1701--1717, 2022.
+\newblock \doi{10.1080/07350015.2021.1970573}.
+
+\bibitem[Chen et~al.(2025)]{chen2025reasoning}
+Yanda Chen et~al.
+\newblock Reasoning models don't always say what they think.
+\newblock arXiv:2505.05410, 2025.
+
+\bibitem[Conley et~al.(2012)Conley, Hansen, and Rossi]{conley2012plausibly}
+Timothy~G. Conley, Christian~B. Hansen, and Peter~E. Rossi.
+\newblock Plausibly exogenous.
+\newblock \emph{Review of Economics and Statistics}, 94\penalty0 (1):\penalty0
+  260--272, 2012.
+\newblock \doi{10.1162/REST_a_00139}.
+
+\bibitem[Cook et~al.(2008)Cook, Shadish, and Wong]{cook2008three}
+Thomas~D. Cook, William~R. Shadish, and Vivian~C. Wong.
+\newblock Three conditions under which experiments and observational studies
+  produce comparable causal estimates: new findings from within-study
+  comparisons.
+\newblock \emph{Journal of Policy Analysis and Management}, 27\penalty0
+  (4):\penalty0 724--750, 2008.
+\newblock \doi{10.1002/pam.20375}.
+
+\bibitem[Diamond(2026)]{diamond2026companion}
+Alexis Diamond.
+\newblock {Who Would Have Complied Anyway? Applying Methods of Causal Inference
+  to Alignment-Faking Evaluations}.
+\newblock Working paper. Data and code:
+  \url{https://github.com/alexisjdiamond/who-would-have-complied-anyway}, 2026.
+
+\bibitem[Dilgren and Wiegreffe(2026)]{dilgren2026evaluating}
+Connor Dilgren and Sarah Wiegreffe.
+\newblock Evaluating chain-of-thought monitorability is still an open problem:
+  comments on {OpenAI}'s monitorability evals.
+\newblock LessWrong, 17 August 2026.
+  \url{https://www.lesswrong.com/posts/z9fPtghFxELBXebY3/evaluating-chain-of-thought-monitorability-is-still-an-open},
+  2026.
+
+\bibitem[Frangakis and Rubin(2002)]{frangakis2002principal}
+Constantine~E. Frangakis and Donald~B. Rubin.
+\newblock Principal stratification in causal inference.
+\newblock \emph{Biometrics}, 58\penalty0 (1):\penalty0 21--29, 2002.
+\newblock \doi{10.1111/j.0006-341X.2002.00021.x}.
+
+\bibitem[Fu et~al.(2026)Fu, Li, Wibisono, and Cohan]{fu2026learning}
+Qiang Fu, Xinyue Li, Andre Wibisono, and Arman Cohan.
+\newblock Learning to be monitored: Causal bounds and intervention-aware
+  post-training recipes for chain-of-thought monitorability.
+\newblock arXiv:2610.31733, 2026.
+
+\bibitem[Greenblatt et~al.(2024)]{greenblatt2024alignment}
+Ryan Greenblatt et~al.
+\newblock Alignment faking in large language models.
+\newblock arXiv:2412.14093, 2024.
+
+\bibitem[Greenland and Robins(1988)]{greenland1988conceptual}
+Sander Greenland and James~M. Robins.
+\newblock Conceptual problems in the definition and interpretation of
+  attributable fractions.
+\newblock \emph{American Journal of Epidemiology}, 128\penalty0 (6):\penalty0
+  1185--1197, 1988.
+\newblock \doi{10.1093/oxfordjournals.aje.a115073}.
+
+\bibitem[Guan et~al.(2026)Guan, Xie, and Baker]{guan2026beyond}
+Melody Guan, Yuxiang Xie, and Bowen Baker.
+\newblock Beyond g-mean{\texttwosuperior}: complementary metrics for
+  monitorability.
+\newblock OpenAI Alignment Research Blog, October 20, 2026.
+  \url{https://alignment.openai.com/beyond-gmean-squared/}, 2026.
+
+\bibitem[Guan et~al.(2025)Guan, Wang, Carroll, Dou, Wei, Williams, Huizinga,
+  Kivlichan, Glaese, Arnav, Pachocki, and Baker]{guan2025monitoring}
+Melody~Y. Guan, Miles Wang, Micah Carroll, Zehao Dou, Annie~Y. Wei, Marcus
+  Williams, Joost Huizinga, Ian Kivlichan, Mia Glaese, Benjamin Arnav, Jakub
+  Pachocki, and Bowen Baker.
+\newblock Monitoring monitorability.
+\newblock arXiv:2512.18311; ICML 2026, 2025.
+
+\bibitem[Henselmans et~al.(2026)Henselmans, Libert, et~al.]{henselmans2026opus}
+Daan Henselmans, Arno Libert, et~al.
+\newblock Opus 4.6 reasoning doesn't verbalize alignment faking, but behavior
+  persists.
+\newblock LessWrong, 9 February 2026 (Aithos Foundation).
+  \url{https://www.lesswrong.com/posts/9wDHByRhmtDaoYAx8/opus-4-6-reasoning-doesn-t-verbalize-alignment-faking-but},
+  2026.
+
+\bibitem[Holland(1986)]{holland1986statistics}
+Paul~W. Holland.
+\newblock Statistics and causal inference.
+\newblock \emph{Journal of the American Statistical Association}, 81\penalty0
+  (396):\penalty0 945--960, 1986.
+\newblock \doi{10.1080/01621459.1986.10478354}.
+
+\bibitem[Holland(1988)]{holland1988causal}
+Paul~W. Holland.
+\newblock Causal inference, path analysis, and recursive structural equations
+  models.
+\newblock \emph{Sociological Methodology}, 18:\penalty0 449--484, 1988.
+\newblock \doi{10.2307/271055}.
+
+\bibitem[Hughes and Sheshadri(2025)]{hughes2025alignment}
+John Hughes and Abhay Sheshadri.
+\newblock Alignment faking revisited: Improved classifiers and open source
+  extensions.
+\newblock Anthropic Alignment Science Blog,
+  \url{https://alignment.anthropic.com/2025/alignment-faking-revisited/}, 2025.
+
+\bibitem[Imai and Yamamoto(2010)]{imai2010causal}
+Kosuke Imai and Teppei Yamamoto.
+\newblock Causal inference with differential measurement error: nonparametric
+  identification and sensitivity analysis.
+\newblock \emph{American Journal of Political Science}, 54\penalty0
+  (2):\penalty0 543--560, 2010.
+\newblock \doi{10.1111/j.1540-5907.2010.00446.x}.
+
+\bibitem[Imbens and Angrist(1994)]{imbens1994identification}
+Guido~W. Imbens and Joshua~D. Angrist.
+\newblock Identification and estimation of local average treatment effects.
+\newblock \emph{Econometrica}, 62\penalty0 (2):\penalty0 467--475, 1994.
+\newblock \doi{10.2307/2951620}.
+
+\bibitem[Imbens and Rubin(2015)]{imbens2015causal}
+Guido~W. Imbens and Donald~B. Rubin.
+\newblock \emph{Causal Inference for Statistics, Social, and Biomedical
+  Sciences: An Introduction}.
+\newblock Cambridge University Press, 2015.
+
+\bibitem[Jo(2002)]{jo2002estimation}
+Booil Jo.
+\newblock Estimation of intervention effects with noncompliance: alternative
+  model specifications.
+\newblock \emph{Journal of Educational and Behavioral Statistics}, 27\penalty0
+  (4):\penalty0 385--409, 2002.
+\newblock \doi{10.3102/10769986027004385}.
+
+\bibitem[Korbak et~al.(2025)Korbak, Balesni, et~al.]{korbak2025chain}
+Tomek Korbak, Mikita Balesni, et~al.
+\newblock Chain of thought monitorability: a new and fragile opportunity for
+  {AI} safety.
+\newblock arXiv:2507.11473, 2025.
+
+\bibitem[Lanham et~al.(2023)]{lanham2023measuring}
+Tamera Lanham et~al.
+\newblock Measuring faithfulness in chain-of-thought reasoning.
+\newblock arXiv:2307.13702, 2023.
+
+\bibitem[Lipsitch et~al.(2010)Lipsitch, Tchetgen~Tchetgen, and
+  Cohen]{lipsitch2010negative}
+Marc Lipsitch, Eric Tchetgen~Tchetgen, and Ted Cohen.
+\newblock Negative controls: a tool for detecting confounding and bias in
+  observational studies.
+\newblock \emph{Epidemiology}, 21\penalty0 (3):\penalty0 383--388, 2010.
+\newblock \doi{10.1097/EDE.0b013e3181d61eeb}.
+
+\bibitem[Manski(1997)]{manski1997monotone}
+Charles~F. Manski.
+\newblock Monotone treatment response.
+\newblock \emph{Econometrica}, 65\penalty0 (6):\penalty0 1311--1334, 1997.
+\newblock \doi{10.2307/2171738}.
+
+\bibitem[{OpenAI}(2026)]{openai2026opensourcing}
+{OpenAI}.
+\newblock Open sourcing monitorability evaluations.
+\newblock Alignment Research Blog, April 23, 2026.
+  \url{https://github.com/openai/monitorability-evals}, 2026.
+
+\bibitem[Robins and Greenland(1989)]{robins1989probability}
+James~M. Robins and Sander Greenland.
+\newblock The probability of causation under a stochastic model for individual
+  risk.
+\newblock \emph{Biometrics}, 45\penalty0 (4):\penalty0 1125--1138, 1989.
+\newblock \doi{10.2307/2531765}.
+
+\bibitem[Rosenbaum(2002)]{rosenbaum2002observational}
+Paul~R. Rosenbaum.
+\newblock \emph{Observational Studies}.
+\newblock Springer, 2nd edition, 2002.
+
+\bibitem[Sharma et~al.(2023)]{sharma2023towards}
+Mrinank Sharma et~al.
+\newblock Towards understanding sycophancy in language models.
+\newblock arXiv:2310.13548, 2023.
+
+\bibitem[Sheshadri et~al.(2025)]{sheshadri2025why}
+Abhay Sheshadri et~al.
+\newblock Why do some language models fake alignment while others don't?
+\newblock arXiv:2506.18032, 2025.
+
+\bibitem[Turpin et~al.(2023)Turpin, Michael, Perez, and
+  Bowman]{turpin2023language}
+Miles Turpin, Julian Michael, Ethan Perez, and Samuel~R. Bowman.
+\newblock Language models don't always say what they think: unfaithful
+  explanations in chain-of-thought prompting.
+\newblock In \emph{Advances in Neural Information Processing Systems 36
+  (NeurIPS 2023)}, 2023.
+
+\bibitem[Wang et~al.(2026)Wang, Sun, Ko, Talati, Gong, Li, Yu, Yu, Shen, Jolly,
+  and Zhang]{wang2026monitorbench}
+Han Wang, Yifan Sun, Brian Ko, Mann Talati, Jiawen Gong, Zimeng Li, Naicheng
+  Yu, Xucheng Yu, Wei Shen, Vedant Jolly, and Huan Zhang.
+\newblock {MonitorBench}: a comprehensive benchmark for chain-of-thought
+  monitorability in large language models.
+\newblock arXiv:2603.28590, 2026.
+
+\end{thebibliography}
