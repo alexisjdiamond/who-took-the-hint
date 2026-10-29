@@ -49,7 +49,7 @@ Guan et al.’s illustration (their Section~3.1.1) makes every quantity concrete
     Take-up rate (input) & $\pi$ & 0.80 & 0.80 & 0.60 & no (stipulated) \\ \addlinespace[3pt]
     Cue-concordant rate, cue present & $p_1$ = $\pi$ + (1 $-$ $\pi$) $p_0$ & 0.85 & 0.81 & 0.80 & yes \\ \addlinespace[3pt]
     Intention-to-treat effect & TE = $\pi$(1 $-$ $p_0$) & 0.60 & 0.76 & 0.30 & yes \\ \addlinespace[3pt]
-    Floor (complier share) & $R_{\mathrm{effect}}$ = TE / $p_1$ & 0.706 & 0.938 & 0.375 & yes \\ \addlinespace[3pt]
+    Floor & $R_{\mathrm{effect}}$ = TE / $p_1$ & 0.706 & 0.938 & 0.375 & yes \\ \addlinespace[3pt]
     Influence rate & $\pi$ / $p_1$ & 0.941 & 0.988 & 0.750 & no \\ \addlinespace[3pt]
     Gap & $\pi$ $p_0$ / $p_1$ & 0.235 & 0.049 & 0.375 & no \\ \addlinespace[3pt]
     Influence rate / floor & 1 / (1 $-$ $p_0$) & 1.33 & 1.05 & 2.00 & — \\ \addlinespace[3pt]
@@ -65,7 +65,7 @@ Guan et al.’s illustration (their Section~3.1.1) makes every quantity concrete
 
 \emph{Step 2, the intention-to-treat effect.} TE = $p_1$ $-$ $p_0$ = 0.60. Offering the hint raised the rate of D by 60 points. This is identified from the two arms.
 
-\emph{Step 3, the floor.} Among encouraged draws that answered D, the share whose answer would not have been D without the hint is TE / $p_1$ = 0.60 / 0.85 $\approx$ 0.71. This is the complier share among encouraged cue-concordant draws, $R_{\mathrm{effect}}$. Under monotone treatment response it too is identified.\footnote{Without monotone treatment response, TE understates the complier mass by the mass of draws the cue moves away from the cue-concordant output, and 0.71 is a lower bound on this share rather than its value (Appendix A.2).}
+\emph{Step 3, the floor.} Among encouraged draws that answered D, the share whose answer would not have been D without the hint is TE / $p_1$ = 0.60 / 0.85 $\approx$ 0.71. This is $R_{\mathrm{effect}}$, the floor. Under monotone treatment response it too is identified.\footnote{Without monotone treatment response, TE understates the complier mass by the mass of draws the cue moves away from the cue-concordant output, and 0.71 is a lower bound on this share rather than its value (Appendix A.2).}
 
 \emph{Step 4, the influence rate.} Among the same 0.85, the share that followed the hint is 0.80 / 0.85 = 16/17 $\approx$ 0.94. Guan et al. report this number as the fraction attributable to the hint and note that the measured total effect, 0.60, is smaller. It is smaller because 0.20 $\times$ 0.25 = 0.05 of all draws are hint-followers who would have guessed D anyway: the hint fired (U = 1 in Guan et al.’s notation) but the answer did not depend on it (Y(0) = Y(1) = 1). The floor excludes them; the influence rate counts them. Their mass, 0.05 / 0.85 $\approx$ 0.24, is the gap.
 
@@ -196,7 +196,7 @@ Guan et al. use “causal” for several different things, and the metric works 
     Kind & Definition & Instance here & Identified from the two arms? \\
     \midrule
     Causal effect & Contrast of potential outcomes & TE (intention-to-treat); TE/$\pi$ (effect of cue use among cue-using draws) & TE yes; TE/$\pi$ no \\ \addlinespace[3pt]
-    Causal quantity & Function of the joint of (Y(0), Y(1)), not a contrast & $R_{\mathrm{effect}}$, the complier share among encouraged cue-concordant draws; probability of necessity & Under monotone treatment response, yes \\ \addlinespace[3pt]
+    Causal quantity & Function of the joint of (Y(0), Y(1)), not a contrast & $R_{\mathrm{effect}}$, the share of encouraged cue-concordant draws whose output the cue changed; probability of necessity & Under monotone treatment response, yes \\ \addlinespace[3pt]
     Mechanism attribution & Property of the data-generating process, not of potential outcomes & Influence rate: share of encouraged cue-concordant draws in which the cue was used & No; bounded below by $R_{\mathrm{effect}}$ \\ \addlinespace[3pt]
     Causal inference & Estimating any of the above from finite draws & The estimate of TE from n draws per arm; the eligibility decision & Not a quantity \\
     \bottomrule
@@ -216,7 +216,7 @@ The scoring differs, and the difference is instructive. Alignment-faking evaluat
 
 \begin{aespubliconly}
 \aesbackmattersection{Acknowledgments}
-The author used Claude (Anthropic) extensively in preparing this paper: to develop and check derivations and worked examples, search for and verify literature, generate the figure, draft, review and edit text, and prepare the LaTeX version and online supplement. The author directed the work and takes responsibility for all claims.
+The author used Claude (Anthropic) extensively in preparing this paper: to develop and check derivations and worked examples, search for and verify literature, generate the figure, draft, review and edit text, and prepare the LaTeX version and online supplement. The author directed the work and takes responsibility for all content.
 \end{aespubliconly}
 
 \bibliography{references}
