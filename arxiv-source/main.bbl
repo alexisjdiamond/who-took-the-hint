@@ -63,12 +63,10 @@ Thomas~D. Cook, William~R. Shadish, and Vivian~C. Wong.
   (4):\penalty0 724--750, 2008.
 \newblock \doi{10.1002/pam.20375}.
 
-\bibitem[Diamond(2026)]{diamond2026companion}
-Alexis Diamond.
-\newblock {Who Would Have Complied Anyway? Applying Methods of Causal Inference
-  to Alignment-Faking Evaluations}.
-\newblock Working paper. Data and code:
-  \url{https://github.com/alexisjdiamond/who-would-have-complied-anyway}, 2026.
+\bibitem[Diamond and Hainmueller(2007)]{diamond2007encouragement}
+Alexis Diamond and Jens Hainmueller.
+\newblock {The Encouragement Design for Program Evaluation}.
+\newblock Technical report, International Finance Corporation, 2007.
 
 \bibitem[Dilgren and Wiegreffe(2026)]{dilgren2026evaluating}
 Connor Dilgren and Sarah Wiegreffe.
