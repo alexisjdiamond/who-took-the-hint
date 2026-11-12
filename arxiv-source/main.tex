@@ -190,7 +190,7 @@ With ordinary specificity it posts a g-mean$^2$ near the top of the published ra
 \emph{Step 5, the general condition.} A monitor detecting a share $\delta$ of cue use flags $\delta$ $\pi$ / $p_1$, and $\mathrm{TPR}_{\mathrm{mc}}$ = min(1, $\delta$ $\pi$ / ($p_1$ $R_{\mathrm{effect}}$)) = min(1, $\delta$ / (1 $-$ $p_0$)). It scores 1 whenever $\delta$ $\geq$ 1 $-$ $p_0$, at any $\pi$. Here 1 $-$ $p_0$ = 0.5, so any monitor catching at least half of cue use scores perfectly. Averaging across instances does not change this, because the score is bounded by 1 on every instance where the condition holds; on instances with lower base rates the same monitor falls below the floor, so the failure is hidden in proportion to a dataset’s share of high-base-rate instances.
 
 \subsection{Validated where the floor is the influence rate, deployed where it is not}
-This case locates the gap of case (1) in the framework’s own environments. From Section~2.2, the influence rate exceeds the floor by the factor 1 / (1 $-$ $p_0$). A monitor can miss $p_0$ of actual cue use and still score $\mathrm{TPR}_{\mathrm{mc}}$ = 1 (worked below). With take-up $\pi$ = 0.8, at $p_0$ = 0.05 (so $p_1$ = 0.81 and TE = 0.76) the floor and influence rate are 5 points apart; at $p_0$ = 0.5 ($p_1$ = 0.9, TE = 0.4) the floor is half the influence rate (Figure 1). Guan et al. recommend low base rates (their Section~3.1.3), and their toy environments comply. Assume a four-option question, a cue for a wrong option (e.g., D), errors spread evenly over the three wrong options, and a model that is right 80\% of the time without the cue. Then the model gives the cued answer unaided at rate $p_0$ $\approx$ (1 $-$ 0.8)/3 $\approx$ 0.07. The environments built to resemble real use, by contrast, have high base rates. Table 2 derives each environment’s structural base rate from the definition of Y, under the equal-baseline assumption of Section~2.2; for correct-hint environments such as Health Queries patient-opinion its figures are upper ends (worked below).
+This case locates the gap of case (1) in the framework’s own environments. From Section~2.2, the influence rate exceeds the floor by the factor 1 / (1 $-$ $p_0$). A monitor can miss $p_0$ of actual cue use and still score $\mathrm{TPR}_{\mathrm{mc}}$ = 1 (worked below). With take-up $\pi$ = 0.6, as for the half-blind monitor of Section~3.1, at $p_0$ = 0.05 (so $p_1$ = 0.62 and TE = 0.57) the floor and influence rate are 5 points apart; at $p_0$ = 0.5 ($p_1$ = 0.8, TE = 0.3) the floor is half the influence rate (Figure 1). The ratio does not depend on $\pi$. Guan et al. recommend low base rates (their Section~3.1.3), and their toy environments comply. Assume a four-option question, a cue for a wrong option (e.g., D), errors spread evenly over the three wrong options, and a model that is right 80\% of the time without the cue. Then the model gives the cued answer unaided at rate $p_0$ $\approx$ (1 $-$ 0.8)/3 $\approx$ 0.07. The environments built to resemble real use, by contrast, have high base rates. Table 2 derives each environment’s structural base rate from the definition of Y, under the equal-baseline assumption of Section~2.2; for correct-hint environments such as Health Queries patient-opinion its figures are upper ends (worked below).
 
 \begin{table}[H]
   \centering\small
@@ -224,17 +224,17 @@ The take-up rate $\pi$ and the encouraged rate $p_1$ cancel, so the ratio depend
 
 So $\mathrm{TPR}_{\mathrm{mc}}$ = 1 whenever $\delta$ $\geq$ 1 $-$ $p_0$: the monitor can miss a share 1 $-$ $\delta$ of cue use as large as $p_0$ and still score perfectly. This is the last column of Table 2 and Table 3.
 
-\emph{Step 3, the reference points in Figure 1.} At $\pi$ = 0.8:
+\emph{Step 3, the reference points in Figure 1.} At $\pi$ = 0.6:
 
 \begin{itemize}
-  \item $p_0$ = 0.05: $p_1$ = 0.8 + 0.2 $\times$ 0.05 = 0.81, TE = 0.76, floor = 0.76 / 0.81 = 0.94, influence rate = 0.8 / 0.81 = 0.99. The two are five points apart and the ratio is 1.05.
-  \item $p_0$ = 0.5: $p_1$ = 0.9, TE = 0.40, floor = 0.44, influence rate = 0.89. The ratio is 2, so the floor is half the influence rate.
-  \item $p_0$ = 0.7: $p_1$ = 0.94, TE = 0.24, floor = 0.26, influence rate = 0.85. The ratio is 3.3, so the floor is under a third of the influence rate.
+  \item $p_0$ = 0.05: $p_1$ = 0.6 + 0.4 $\times$ 0.05 = 0.62, TE = 0.57, floor = 0.57 / 0.62 = 0.92, influence rate = 0.6 / 0.62 = 0.97. The two are five points apart and the ratio is 1.05.
+  \item $p_0$ = 0.5: $p_1$ = 0.8, TE = 0.30, floor = 0.375, influence rate = 0.75. The ratio is 2, so the floor is half the influence rate: the half-blind monitor of Section~3.1.
+  \item $p_0$ = 0.7: $p_1$ = 0.88, TE = 0.18, floor = 0.20, influence rate = 0.68. The ratio is 3.3, so the floor is under a third of the influence rate.
 \end{itemize}
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.78\linewidth]{fig1.png}
-  \caption{The floor and the influence rate against the base rate $p_0$ at $\pi$ = 0.8, equal baselines. The band’s height, $\pi$ $p_0$ / $p_1$, is the gap of Section~2.2. Vertical lines mark structural base rates from Table 2 and Table 3.}
+  \caption{The floor and the influence rate against the base rate $p_0$ at $\pi$ = 0.6, the take-up of the half-blind monitor of Section~3.1, equal baselines. The band’s height, $\pi$ $p_0$ / $p_1$, is the gap of Section~2.2. At $p_0$ = 0.5 the floor (0.375) is half the influence rate (0.75), which is why that monitor scores perfectly while catching half of cue use. Vertical lines mark structural base rates from Table 2 and Table 3. The ratio of the two curves, 1 / (1 $-$ $p_0$), does not depend on $\pi$.}
   \label{fig:floor}
 \end{figure}
 
